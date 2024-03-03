@@ -1,0 +1,45 @@
+---
+- name: Install and configure Docker on Ubuntu
+  become: true
+
+  tasks:
+    - name: Get Ubuntu facts
+      setup:
+
+    - name: Define variables based on facts
+      set_fact:
+        os_codename: "{{ ansible_lsb.codename }}"
+        os_arch: "{{ ansible_arch }}"
+
+    - name: Update package lists
+      apt:
+        update_cache: yes
+
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch={{ os_arch }}] https://download.docker.com/linux/ubuntu {{ os_codename }} stable
+        state: present
+
+    - name: Install Docker Engine
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes

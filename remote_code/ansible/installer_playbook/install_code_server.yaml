@@ -1,0 +1,29 @@
+---
+- name: Initial Setup
+  import_playbook: configuration.yaml
+
+- name: Install and configure code-server
+  become: true
+
+  tasks:
+
+    - name: Download and run code-server installation script
+      shell: curl -fsSL https://code-server.dev/install.sh | sh
+
+    - name: Enable and start code-server service
+      service:
+        name: code-server@{{ ansible_user }}
+        state: started
+        enabled: yes
+
+    - name: Disable password authentication in config.yaml
+      lineinfile:
+        path: /home/{{ ansible_user }}/.config/code-server/config.yaml
+        regexp: '^auth: password'
+        line: 'auth: none'
+        backup: yes
+
+    - name: Restart code-server service
+      service:
+        name: code-server@{{ ansible_user }}
+        state: restarted
