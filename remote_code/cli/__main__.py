@@ -3,7 +3,7 @@ import pathlib
 
 import click
 
-from remote_code.cli import infra, config_builder
+from remote_code.cli import infra, config_builder, config_data
 
 
 @click.group(invoke_without_command=True)
@@ -14,10 +14,7 @@ def cli(ctx):
 
 
 @cli.command()
-@click.option("-a", "--arch", default="amd64", help="VM Architecture [amd64|arm64] defualt=amd64")
-@click.option("-A", "--aws-region", default="us-east-1", help="Specify AWS Region default=us-east-1")
-@click.option("-I", "--instance_type", default="t3.micro", help="AWS Instance Type to create default=t3.micro")
-def create(arch, aws_region, instance_type):
+def create():
     """
     Creates AWS Infra for the VM
     """
@@ -25,6 +22,9 @@ def create(arch, aws_region, instance_type):
         click.echo(click.style("No Configuration (.rcode.yml) File Found in current working directory\nRun `rcode init` to create a configuration file", fg="bright_red"))
         return
     click.echo(click.style("Creating Infra...", fg="green"))
+    arch = config_data.get_arch()
+    aws_region = config_data.get_aws_region()
+    instance_type = config_data.get_instance_type()
     infra.sync_or_create_infra(arch, aws_region, instance_type)
 
 
