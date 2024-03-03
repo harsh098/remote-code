@@ -27,3 +27,7 @@ def get_aws_region() -> str:
     data = get_config_data()
     return data["aws_region"]
 
+def get_key_value_from_config(key: str) -> str:
+    data = get_config_data()
+    return data[key]
+
