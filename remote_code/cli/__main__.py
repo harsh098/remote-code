@@ -1,8 +1,9 @@
+import os
 import pathlib
 
 import click
 
-from remote_code.cli import infra
+from remote_code.cli import infra, config_builder
 
 
 @click.group(invoke_without_command=True)
@@ -20,6 +21,9 @@ def create(arch, aws_region, instance_type):
     """
     Creates AWS Infra for the VM
     """
+    if not os.path.exists(pathlib.Path(infra.working_dir) / ".rcode.yml"):
+        click.echo(click.style("No Configuration (.rcode.yml) File Found in current working directory\nRun `rcode init` to create a configuration file", fg="bright_red"))
+        return
     click.echo(click.style("Creating Infra...", fg="green"))
     infra.sync_or_create_infra(arch, aws_region, instance_type)
 
@@ -35,6 +39,13 @@ def destroy():
         click.echo(click.style("Successfully Destroyed Infra", fg="yellow"))
     else:
         click.echo(click.style("There Were Problems Removing Infra", fg="bright_red"))
+
+@cli.command()
+def init():
+    """
+    Creates configuration file for .rcode.yml
+    """
+    config_builder.build_config()
 
 
 if __name__ == '__main__':
