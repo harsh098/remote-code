@@ -29,5 +29,5 @@ def get_aws_region() -> str:
 
 def get_key_value_from_config(key: str) -> str:
     data = get_config_data()
-    return data[key]
+    return data[key] if key in data else None
 

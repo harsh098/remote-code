@@ -1,3 +1,4 @@
+import os.path
 import pathlib
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
@@ -7,6 +8,8 @@ import inquirer
 import yaml
 
 from remote_code.cli import infra
+from remote_code.plugins import registry
+
 
 @dataclass
 class MultiOptionType:
@@ -26,7 +29,7 @@ class MultiOptionType:
 
 @dataclass
 class PluginType(MultiOptionType):
-    choices: List[str] = field(default_factory=lambda: ["Cpp", "Maven", "Go", "GCC-C/C++", "Clang-C/C++", "OpenJDK", "NodeJS", "MySQL", "Postgres", "Python3", "MongoDB"])
+    choices: List[str] = field(default_factory=lambda: registry.keys())
 
 
 
@@ -65,11 +68,14 @@ options = [
 
 def build_config():
     curdir = pathlib.Path(infra.working_dir)
+    file_path = curdir / ".rcode.yml"
+    if os.path.exists(file_path):
+        click.echo(click.style(".rcode.yml already exists", fg="green"))
+        return
     config_options = dict()
     for option in options:
         option.get_input(config_options)
 
-    file_path = curdir / ".rcode.yml"
     with open(file_path, "w") as config_file:
         yaml.dump(config_options, config_file)
 

@@ -3,6 +3,7 @@ import pathlib
 
 import click
 
+from remote_code import plugins
 from remote_code.cli import infra, config_builder, config_data
 
 
@@ -46,6 +47,10 @@ def init():
     Creates configuration file for .rcode.yml
     """
     config_builder.build_config()
+    infra.create_directory_structure()
+    infra.create_tf_files()
+    infra.create_ansible_init_playbooks()
+    plugins.build_plugin_playbooks()
 
 
 if __name__ == '__main__':
