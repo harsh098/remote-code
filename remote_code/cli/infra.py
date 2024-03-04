@@ -28,6 +28,9 @@ def create_directory_structure():
         if not os.path.exists(os.path.join(working_dir, ".rcode", "ansible", "plugins")):
             os.makedirs(os.path.join(working_dir, ".rcode", "ansible", "plugins"))
 
+        if not os.path.exists(os.path.join(working_dir, ".rcode", "ansible", "inventory")):
+            os.makedirs(os.path.join(working_dir, ".rcode", "ansible", "inventory"))
+
     except PermissionError:
         click.echo(click.style("Permission Denied", fg="bright_red"))
 
