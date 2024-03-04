@@ -1,0 +1,30 @@
+- name: Install and configure C/C++ (GCC) DevTools on Ubuntu
+  become: true
+  tasks:
+  - name: Get Ubuntu facts
+    setup: null
+  - name: Define variables based on facts
+    set_fact:
+      os_codename: '{{ ansible_lsb.codename }}'
+      os_arch: '{{ ansible_arch }}'
+  - name: Update package lists
+    apt:
+      update_cache: 'yes'
+  - name: Install g++ if version explicitly defined
+    apt:
+      name:
+      - g++={{gcc_version}}
+      state: present
+    when: gcc_version is defined
+  - name: Install latest g++
+    apt:
+      name:
+      - g++
+      state: present
+    when: gcc_version is not defined
+  - name: Install build-essentials
+    apt:
+      apt:
+        name:
+        - build-essential
+        state: present
