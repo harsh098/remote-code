@@ -12,10 +12,24 @@ registry: Dict[str, BaseInstaller.__base__] = {
     "Cpp": cpp_plugin.CppInstallerClass
 }
 
+
 def build_plugin_playbooks():
     click.echo(click.style("Initialising Plugins", fg="cyan"))
     plugins_to_install = config_data.get_key_value_from_config("plugins") or []
     master_playbook_json = [
+        {
+            "name": "Configure Git on Remote Machine",
+            "hosts": "vm",
+            "tasks": [
+                {
+                    "name": "Git Checkout",
+                    "git": {
+                        "repo": f"{config_data.get_git_repo()}",
+                        "dest": "/home/ubuntu/project"
+                    }
+                }
+            ]
+        },
         {
             "import_playbook": str(pathlib.Path("installer_playbook") / "install_code_server.yml")
         }
