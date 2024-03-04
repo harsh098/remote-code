@@ -9,7 +9,7 @@ from remote_code.plugins.installer import BaseInstaller
 
 
 class CppInstallerClass(BaseInstaller):
-    inventory_file = "gcc_inventory.ini"
+    inventory_file = "gcc_inventory"
     plugin_file = "cpp.yml"
     def keys_handler(self) -> Dict[str, Any]:
         keys = {}
@@ -31,6 +31,7 @@ class CppInstallerClass(BaseInstaller):
             {
                 "name": "Install and configure C/C++ (GCC) DevTools on Ubuntu",
                 "become": True,
+                "hosts": "vm",
                 "tasks": [
                     {
                         "name": "Get Ubuntu facts",
@@ -72,12 +73,10 @@ class CppInstallerClass(BaseInstaller):
                     {
                         "name": "Install build-essentials",
                         "apt": {
-                            "apt": {
-                                "name": [
-                                    "build-essential"
-                                ],
-                                "state": "present"
-                            }
+                            "name": [
+                                "build-essential"
+                            ],
+                            "state": "present"
                         }
                     }
                 ]

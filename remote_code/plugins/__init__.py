@@ -1,6 +1,7 @@
 import pathlib
 from typing import Dict, List, Any
 
+import click
 import yaml
 
 from remote_code.cli import config_data, infra
@@ -12,6 +13,7 @@ registry: Dict[str, BaseInstaller.__base__] = {
 }
 
 def build_plugin_playbooks():
+    click.echo(click.style("Initialising Plugins", fg="cyan"))
     plugins_to_install = config_data.get_key_value_from_config("plugins") or []
     master_playbook_json = [
         {

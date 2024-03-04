@@ -105,14 +105,24 @@ def create_tf_files():
     """).strip("\n"),
 
         "create_ansible_inventory.tf": dedent(r"""
+            resource "local_file" "ansible_cfg" {
+              depends_on = [
+                aws_instance.vm,
+                local_file.ssh_private_key
+              ]
+              filename = abspath("${path.module}/../ansible/ansible.cfg")
+              content  = "[defaults]\ninventory=${abspath("${path.module}/../ansible/inventory/")}"
+            }
+            
             resource "local_file" "ansible_inventory" {
               depends_on = [
                 aws_instance.vm,
                 local_file.ssh_private_key
               ]
-              filename = abspath("${path.module}/../ansible/inventory/inventory.ini")
-              content  = "ansible_arch=${var.arch}\n\n[vm]\n${aws_instance.vm.public_ip}  ansible_ssh_user=ubuntu ansible_ssh_private_key_file=${local_file.ssh_private_key.filename}"
+              filename = abspath("${path.module}/../ansible/inventory/inventory")
+              content  = "[all:vars]\nansible_arch=${var.arch}\n\n[vm]\n${aws_instance.vm.public_ip}  ansible_ssh_user=ubuntu ansible_ssh_private_key_file=${local_file.ssh_private_key.filename}"
             }
+        
         """).strip("\n"),
 
         "vars.tf": dedent(
@@ -238,6 +248,7 @@ def create_ansible_init_playbooks():
         "installer_playbook/configuration.yml": dedent("""
         ---
         - name: Install and configure Docker on Ubuntu
+          hosts: vm
           become: true
         
           tasks:
@@ -286,9 +297,10 @@ def create_ansible_init_playbooks():
         "installer_playbook/install_code_server.yml": dedent("""
         ---
         - name: Initial Setup
-          import_playbook: configuration.yaml
+          import_playbook: configuration.yml
         
         - name: Install and configure code-server
+          hosts: vm
           become: true
         
           tasks:

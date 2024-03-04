@@ -31,10 +31,9 @@
 
     - name: Install build-essentials
       apt:
-        apt:
-          name:
-            - build-essential
-          state: present
+        name:
+          - build-essential
+        state: present
 
 
 
