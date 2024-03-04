@@ -28,6 +28,7 @@ def create():
     aws_region = config_data.get_aws_region()
     instance_type = config_data.get_instance_type()
     infra.sync_or_create_infra(arch, aws_region, instance_type)
+    plugins.build_plugin_playbooks()
 
 
 @cli.command()
