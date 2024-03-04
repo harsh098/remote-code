@@ -21,7 +21,7 @@ class CppInstallerClass(BaseInstaller):
 
     def generate_config(self):
         keys = self.keys_handler()
-        path_to_plugin_inventory_file = pathlib.Path(infra.working_dir) / ".rcode" / "ansible" / self.inventory_file
+        path_to_plugin_inventory_file = pathlib.Path(infra.working_dir) / ".rcode" / "ansible" / "inventory" / self.inventory_file
         with open(path_to_plugin_inventory_file, "w+") as f:
             for key, val in keys.items():
                 f.write(f"{key}={val}\n")
