@@ -6,6 +6,7 @@ import click
 
 from remote_code import plugins
 from remote_code.cli import infra, config_builder, config_data
+from remote_code.cli.ansible_wrapper import run_ansible_playbooks
 
 
 @click.group(invoke_without_command=True)
@@ -29,6 +30,7 @@ def create():
     instance_type = config_data.get_instance_type()
     infra.sync_or_create_infra(arch, aws_region, instance_type)
     plugins.build_plugin_playbooks()
+    run_ansible_playbooks()
 
 
 @cli.command()
