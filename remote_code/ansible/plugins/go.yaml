@@ -1,0 +1,76 @@
+---
+- name: Install and Go DevTools on Ubuntu
+  become: true
+
+  tasks:
+    - name: Get Ubuntu facts
+      setup:
+
+    - name: Define variables based on facts
+      set_fact:
+        os_codename: "{{ ansible_lsb.codename }}"
+        os_arch: "{{ ansible_arch }}"
+
+---
+---
+- name: Setup Go in Ubuntu
+  become: true
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - curl
+          - ca-certificates
+        state: present
+
+    - name: Download Golang installation script
+      get_url:
+        url: https://dl.google.com/go/go{{ golang_version }}.linux-amd64.tar.gz
+        dest: /tmp/go.tar.gz
+
+    - name: Extract Golang archive
+      unarchive:
+        src: /tmp/go.tar.gz
+        dest: /usr/local
+        extra_opts: ['--strip-components=1']
+
+    - name: Set Golang environment variables
+      lineinfile:
+        path: /etc/profile
+        line: 'export GOROOT=/usr/local/go'
+        state: present
+      lineinfile:
+        path: /etc/profile
+        line: 'export GOPATH=$HOME/go'
+        state: present
+
+    - name: Set execution rights for Golang binaries
+      file:
+        path: "{{ golang_dir }}/bin/*"
+        mode: +x
+        state: file
+        go_dir: /usr/local/go
+
+    - name: Install golangci-lint
+      get_url:
+        url: https://github.com/golangci/golangci-lint/releases/download/v{{ golangci_lint_version }}/golangci-lint-v{{ golangci_lint_version }}-linux-amd64.zip
+        dest: /tmp/golangci-lint.zip
+      unarchive:
+        src: /tmp/golangci-lint.zip
+        dest: /usr/local/bin
+      name: golangci-lint
+      file:
+        src: /usr/local/bin/golangci-lint
+        dest: /usr/local/bin/golangci-lint
+        state: file
+        mode: +x
+
+    - name: Install golint
+      go:
+        name: golang/lint/golint
+        state: present
+
+  vars:
+    golang_version: "{{ lookup('pipe', 'go version | cut -d  " " -f 3') }}"  # Get the latest version by default
+    golangci_lint_version: "v1.56.0"  # Specify a version or leave empty for latest
