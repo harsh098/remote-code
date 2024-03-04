@@ -1,5 +1,6 @@
 import os
 import pathlib
+from textwrap import dedent
 
 import click
 
@@ -51,6 +52,12 @@ def init():
     infra.create_tf_files()
     infra.create_ansible_init_playbooks()
     plugins.build_plugin_playbooks()
+    msg = dedent("""
+    In the .rcode.yml add config options for your plugins as described in documentation which can be found at:
+    <docs_URL>
+    """)
+    #TODO: Add Docs URL
+    click.echo(click.style(msg, fg="blue"))
 
 
 if __name__ == '__main__':
