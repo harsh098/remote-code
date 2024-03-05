@@ -1,6 +1,7 @@
 import time
 import webbrowser
 from textwrap import dedent
+from typing import Optional
 
 import click
 import paramiko.ssh_exception
@@ -8,7 +9,7 @@ from sshtunnel import SSHTunnelForwarder
 
 from remote_code.cli import infra
 
-def port_forward_ssh(remote_port: int, local_port: int, open_in_browser: bool=False, https: bool=False):
+def port_forward_ssh(remote_port: int, local_port: int, open_in_browser: Optional[str]=None, https: bool=False):
     tf_data = infra.get_terraform_values()
     ssh_host = tf_data["aws_instance_ip"]["value"]
     ssh_key = tf_data["ssh_private_key_path"]["value"]
@@ -23,13 +24,13 @@ def port_forward_ssh(remote_port: int, local_port: int, open_in_browser: bool=Fa
             server.start()
             click.echo(click.style(
                 dedent(f"""
-                Starting SSH Tunnel from {ssh_host}:{remote_port} to 127.0.0.1:{local_port}
+                Starting SSH Tunnel from {ssh_host}:{remote_port} to 127.0.0.1:{local_port} 
                 To stop the tunnel press Ctrl-C
                 """), fg="blue"
             ))
-            if open_in_browser:
-                url = ("https://" if https else "http://") + f"127.0.0.1:{local_port}/"
-                click.echo(click.style(f"Opening in Browser:-\n\thttps://127.0.0.1:{local_port}/", fg="blue"))
+            if open_in_browser!=None:
+                url = ("https://" if https else "http://") + f"127.0.0.1:{local_port}/" + (f"?folder={open_in_browser}" if open_in_browser!="" else "")
+                click.echo(click.style(f"Opening in Browser:-\n\t{url}", fg="blue"))
                 webbrowser.open(url)
             while True:
                 time.sleep(1)

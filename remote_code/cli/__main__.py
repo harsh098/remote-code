@@ -88,7 +88,7 @@ def open(local_port):
     """
     Open In Browser
     """
-    ssh_utils.port_forward_ssh(remote_port=8080, local_port=local_port, open_in_browser=True, https=False)
+    ssh_utils.port_forward_ssh(remote_port=8080, local_port=local_port, open_in_browser="/home/ubuntu/project", https=False)
 
 
 
