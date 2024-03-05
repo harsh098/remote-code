@@ -12,8 +12,11 @@ from remote_code.cli.ansible_wrapper import run_ansible_playbooks
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
+    click.echo(click.style("Welcome to Remote Code", fg="bright_blue"))
     if ctx.invoked_subcommand is None:
-        click.echo(click.style("Welcome to Remote Code", fg="bright_blue"))
+        click.echo(click.style("Run `rcode --help` to see a list of available commands", fg="bright_green"))
+        click.echo(click.style("Run `rcode init` to set up a Cloud VM", fg="bright_green"))
+
 
 
 @cli.command()
@@ -31,7 +34,15 @@ def create():
     infra.sync_or_create_infra(arch, aws_region, instance_type)
     plugins.build_plugin_playbooks()
     run_ansible_playbooks()
-
+    click.echo(click.style(
+        dedent("""
+        Your Remote Code VM is Up and Running.
+        Run `rcode open` to open your CDE in Browser
+        Alternatively you can run:-
+        \t`rcode port-forward`
+        and access your VM on the forwarded port
+        """)
+    ))
 
 @cli.command()
 def destroy():
@@ -70,6 +81,15 @@ def port_forward(local_port, remote_port):
     Establishes tunnel between Remote-Code VM and your local machine
     """
     ssh_utils.port_forward_ssh(remote_port=remote_port, local_port=local_port)
+
+@cli.command()
+@click.option("-l", "--local-port", help="Local Port to forward to (Ensure this port is available)", prompt=True, default=8080, show_default=True)
+def open(local_port):
+    """
+    Open In Browser
+    """
+    ssh_utils.port_forward_ssh(remote_port=8080, local_port=local_port, open_in_browser=True, https=False)
+
 
 
 if __name__ == '__main__':

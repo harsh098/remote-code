@@ -1,4 +1,5 @@
 import time
+import webbrowser
 from textwrap import dedent
 
 import click
@@ -7,7 +8,7 @@ from sshtunnel import SSHTunnelForwarder
 
 from remote_code.cli import infra
 
-def port_forward_ssh(remote_port: int, local_port: int):
+def port_forward_ssh(remote_port: int, local_port: int, open_in_browser: bool=False, https: bool=False):
     ssh_host = infra.get_terraform_values()["aws_instance_ip"]["value"]
     ssh_key = infra.get_terraform_values()["ssh_private_key_path"]["value"]
     try:
@@ -25,6 +26,10 @@ def port_forward_ssh(remote_port: int, local_port: int):
                 To stop the tunnel press Ctrl-C
                 """), fg="blue"
             ))
+            if open_in_browser:
+                url = ("https://" if https else "http://") + f"127.0.0.1:{local_port}/"
+                click.echo(click.style(f"Opening in Browser:-\n\thttps://127.0.0.1:{local_port}/", fg="blue"))
+                webbrowser.open(url)
             while True:
                 time.sleep(1)
 
