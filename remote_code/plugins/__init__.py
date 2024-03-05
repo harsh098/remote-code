@@ -5,11 +5,12 @@ import click
 import yaml
 
 from remote_code.cli import config_data, infra
-from remote_code.plugins import cpp_plugin
+from remote_code.plugins import cpp_plugin, python_plugin
 from remote_code.plugins.installer import BaseInstaller
 
 registry: Dict[str, BaseInstaller.__base__] = {
-    "Cpp": cpp_plugin.CppInstallerClass
+    "Cpp": cpp_plugin.CppInstallerClass,
+    "Python3": python_plugin.PythonInstallerClass
 }
 
 

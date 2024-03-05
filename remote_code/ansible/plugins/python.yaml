@@ -1,0 +1,36 @@
+- name: Install Python DevTools on Ubuntu
+  hosts: vm
+  become: true
+
+  tasks:
+    - name: Get Ubuntu facts
+      setup:
+
+    - name: Define variables based on facts
+      set_fact:
+        os_codename: "{{ ansible_lsb.codename }}"
+        os_arch: "{{ ansible_arch }}"
+
+    - name: Update package lists
+      apt:
+        update_cache: yes
+
+    - name: Install latest-stable Version of Python
+      apt:
+        name:
+          - python3
+          - python3-dev
+          - python3-poetry
+          - python3-venv
+        state: present
+
+    - name: Install A Specific Version of Python (Version 3.9 and later supported) if Specified
+      apt:
+        name:
+          - python{{ python_version }}
+          - python{{ python_version }}-dev
+        state: present
+      when: python_version is defined
+      ignore_errors: true
+
+
