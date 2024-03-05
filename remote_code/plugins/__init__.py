@@ -22,11 +22,19 @@ def build_plugin_playbooks():
             "hosts": "vm",
             "tasks": [
                 {
+                    "name": "Initialise Directory",
+                    "file": {
+                        "path": "/home/ubuntu/project",
+                        "state": "directory"
+                    },
+                },
+                {
                     "name": "Git Checkout",
                     "git": {
                         "repo": f"{config_data.get_git_repo()}",
-                        "dest": "/home/ubuntu/project"
-                    }
+                        "dest": "/home/ubuntu/project",
+                    },
+                    "ignore_errors": False
                 }
             ]
         },
