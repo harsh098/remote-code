@@ -9,8 +9,9 @@ from sshtunnel import SSHTunnelForwarder
 from remote_code.cli import infra
 
 def port_forward_ssh(remote_port: int, local_port: int, open_in_browser: bool=False, https: bool=False):
-    ssh_host = infra.get_terraform_values()["aws_instance_ip"]["value"]
-    ssh_key = infra.get_terraform_values()["ssh_private_key_path"]["value"]
+    tf_data = infra.get_terraform_values()
+    ssh_host = tf_data["aws_instance_ip"]["value"]
+    ssh_key = tf_data["ssh_private_key_path"]["value"]
     try:
         with SSHTunnelForwarder(
             ssh_address_or_host=ssh_host,
