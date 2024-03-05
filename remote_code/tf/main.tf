@@ -41,7 +41,3 @@ data "aws_ami" "latest-ubuntu" {
 data "external" "python_interpreter_binary" {
   program = ["bash", "${path.module}/get_python_binary.sh"]
 }
-
-
-
-

@@ -4,12 +4,7 @@ resource "aws_instance" "vm" {
   instance_type               = var.instance_type
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.allow_ssh.id]
-  tags                        = {
+  tags = {
     Name = "VsCodeServer"
   }
 }
-
-
-
-
-
