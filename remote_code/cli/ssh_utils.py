@@ -9,6 +9,45 @@ from sshtunnel import SSHTunnelForwarder
 
 from remote_code.cli import infra
 
+
+import paramiko
+import socket
+def __is_ssh_reachable(hostname, port=22, username="ubuntu", pkey=None, timeout=2):
+  """
+  Checks if a host is reachable by SSH using a private key.
+
+  Args:
+      hostname: The hostname or IP address of the remote server.
+      port (int, optional): The SSH port (default 22).
+      username (str, optional): The username for SSH authentication (default "your_username").
+      pkey (paramiko.RSAKey or paramiko.DSSAKey, optional): The private key object for authentication.
+      timeout (int, optional): The connection timeout in seconds (default 2).
+
+  Returns:
+      bool: True if the host is reachable, False otherwise.
+  """
+  client = paramiko.SSHClient()
+  client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+  try:
+    if pkey is not None:
+      client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+      client.connect(hostname, port=port, username=username, pkey=pkey, timeout=timeout)
+    else:
+      client.connect(hostname, port=port, username=username, timeout=timeout)
+    return True
+  except (paramiko.SSHException, socket.timeout) as e:
+    return False
+  finally:
+    client.close()
+
+
+def is_ssh_reachable():
+    tf_data = infra.get_terraform_values()
+    host = tf_data["aws_instance_ip"]["value"]
+    key_path = tf_data["ssh_private_key_path"]["value"]
+    pkey = paramiko.RSAKey.from_private_key_file(key_path)
+    return __is_ssh_reachable(hostname=host, pkey=pkey, username="ubuntu")
+
 def port_forward_ssh(remote_port: int, local_port: int, open_in_browser: Optional[str]=None, https: bool=False):
     tf_data = infra.get_terraform_values()
     ssh_host = tf_data["aws_instance_ip"]["value"]

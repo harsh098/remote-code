@@ -33,6 +33,8 @@ def create():
     instance_type = config_data.get_instance_type()
     infra.sync_or_create_infra(arch, aws_region, instance_type)
     plugins.build_plugin_playbooks()
+    while not (ssh_status:= ssh_utils.is_ssh_reachable()):
+        click.echo(click.style("Waiting for VM to accept SSH Connection..."))
     run_ansible_playbooks()
     click.echo(click.style(
         dedent("""
@@ -80,6 +82,8 @@ def port_forward(local_port, remote_port):
     """
     Establishes tunnel between Remote-Code VM and your local machine
     """
+    while not (ssh_status:= ssh_utils.is_ssh_reachable()):
+        click.echo(click.style("Waiting for VM to accept SSH Connection..."))
     ssh_utils.port_forward_ssh(remote_port=remote_port, local_port=local_port)
 
 @cli.command()
