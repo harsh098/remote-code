@@ -5,7 +5,7 @@ from textwrap import dedent
 import click
 
 from remote_code import plugins
-from remote_code.cli import infra, config_builder, config_data
+from remote_code.cli import infra, config_builder, config_data, ssh_utils
 from remote_code.cli.ansible_wrapper import run_ansible_playbooks
 
 
@@ -61,6 +61,15 @@ def init():
     """)
     #TODO: Add Docs URL
     click.echo(click.style(msg, fg="blue"))
+
+@cli.command()
+@click.option("-r", "--remote-port", help="Remote Port on the VM", prompt=True, default=8080, show_default=True)
+@click.option("-l", "--local-port", help="Local Port to forward to", prompt=True, default=8080, show_default=True)
+def port_forward(local_port, remote_port):
+    """
+    Establishes tunnel between Remote-Code VM and your local machine
+    """
+    ssh_utils.port_forward_ssh(remote_port=remote_port, local_port=local_port)
 
 
 if __name__ == '__main__':

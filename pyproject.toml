@@ -14,6 +14,8 @@ ansible = "^9.2.0"
 pyyaml = "^6.0.1"
 inquirer = "^3.2.4"
 ansible-runner = "^2.3.5"
+forward = "^0.1.0"
+sshtunnel = "^0.4.0"
 
 [build-system]
 requires = ["poetry-core"]
