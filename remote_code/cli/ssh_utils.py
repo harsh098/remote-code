@@ -34,14 +34,20 @@ def __is_ssh_reachable(hostname, port=22, username="ubuntu", pkey=None, timeout=
       client.connect(hostname, port=port, username=username, pkey=pkey, timeout=timeout)
     else:
       client.connect(hostname, port=port, username=username, timeout=timeout)
+      client.close()
     return True
   except (paramiko.SSHException, socket.timeout) as e:
     return False
-  finally:
-    client.close()
+  except paramiko.ssh_exception.NoValidConnectionsError:
+      return False
 
 
-def is_ssh_reachable():
+def is_ssh_reachable() -> bool:
+    """
+    Checks if Remote Code VM is reacheable via SSH on port 22
+    Returns:
+        bool: True if host is reacheable else return False
+    """
     tf_data = infra.get_terraform_values()
     host = tf_data["aws_instance_ip"]["value"]
     key_path = tf_data["ssh_private_key_path"]["value"]
@@ -49,6 +55,14 @@ def is_ssh_reachable():
     return __is_ssh_reachable(hostname=host, pkey=pkey, username="ubuntu")
 
 def port_forward_ssh(remote_port: int, local_port: int, open_in_browser: Optional[str]=None, https: bool=False):
+    """
+    Implements Port Forward Functionality in Python.
+    :param remote_port: int
+    :param local_port: int
+    :param open_in_browser: Optional[int]
+    :param https: bool: if True uses https:// else use http:// if False
+    :return:
+    """
     tf_data = infra.get_terraform_values()
     ssh_host = tf_data["aws_instance_ip"]["value"]
     ssh_key = tf_data["ssh_private_key_path"]["value"]

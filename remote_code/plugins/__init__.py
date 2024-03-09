@@ -15,6 +15,12 @@ registry: Dict[str, BaseInstaller.__base__] = {
 
 
 def build_plugin_playbooks():
+    """
+    This function builds ansible playbooks in .rcode/ansible/ directory
+    Affects:
+        - .rcode/ansible/plugins
+    :return: None
+    """
     click.echo(click.style("Initialising Plugins", fg="cyan"))
     plugins_to_install = config_data.get_key_value_from_config("plugins") or []
     master_playbook_json = [
